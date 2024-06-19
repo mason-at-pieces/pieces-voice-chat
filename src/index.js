@@ -94,6 +94,11 @@ function startRecording() {
   micInstance = mic(audioConfig);
   const micInputStream = micInstance.getAudioStream();
   const fileName = `recordings/output.${audioConfig.fileType}`;
+  // Check if the recordings directory exists
+  if (!fs.existsSync('recordings')) {
+    fs.mkdirSync('recordings');
+  }
+
   const outputFileStream = fs.createWriteStream(fileName);
 
   micInputStream.pipe(outputFileStream);

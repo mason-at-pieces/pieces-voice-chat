@@ -1,0 +1,10 @@
+node_modules
+dist
+
+.idea
+*.iml
+
+.env
+
+# Don't want to share voice/response recordings
+recordings

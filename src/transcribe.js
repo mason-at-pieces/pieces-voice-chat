@@ -39,8 +39,6 @@ async function transcribeAndRespond(filePath) {
         audioData = audioData[0];
       }
 
-      console.log("Audio data read successfully.\n")
-
       // Transcribe the audio
       const transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-small.en');
       const output = await transcriber(audioData);

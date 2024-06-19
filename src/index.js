@@ -43,12 +43,17 @@ async function transcribeAndRespond(filePath) {
 
       // console.log("\nProcessing transcription...\n");
       const piecesClient = new PiecesClient({
-        baseURL: 'http://localhost:1000',
+        baseUrl: 'http://localhost:1000',
       });
 
       const answer = await piecesClient.askQuestion({
         question: output.text,
       });
+
+      if (!answer) {
+        console.log("BOT: I'm sorry, I ran into an issue and couldn't generate a response. Please try again.");
+        return;
+      }
 
       console.log(`BOT:\n${answer}`);
 

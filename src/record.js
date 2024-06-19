@@ -36,11 +36,24 @@ function startRecording() {
     // End file stream
     outputFileStream.end();
 
+    // Dynamically import ora
+    // const ora = (await import('ora')).default;
+
+    // Start spinner
+    // const spinner = ora('Generating response...').start();
+
     // Process the recorded file
     await transcribeAndRespond(fileName);
 
+    // Stop spinner
+    // spinner.stop();
+
     // Ask for the next question
     console.log("\nPress SPACE to ask another question or Q to exit.");
+  });
+
+  micInputStream.on('error', (err) => {
+    console.error('Error occurred: ', err);
   });
 
   micInstance.start();

@@ -2,6 +2,7 @@ const fs = require("fs");
 const { OpenAI } = require("openai");
 const { PiecesClient } = require("pieces-copilot-sdk");
 const player = require('play-sound')(opts = {})
+const WaveFile = require('wavefile').WaveFile;
 
 require('dotenv').config();
 
@@ -12,39 +13,64 @@ const openai = new OpenAI({
 async function transcribeAndRespond(filePath) {
   try {
     console.log("Transcribing audio...\n");
-    const transcription = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(filePath),
-      model: "whisper-1",
-    });
 
-    console.log(`USER:\n${transcription.text}\n`);
+    await (async () => {
+      const { pipeline } = await import('@xenova/transformers');
 
-    // console.log("\nProcessing transcription...\n");
-    const piecesClient = new PiecesClient({
-      baseURL: 'http://localhost:1000',
-    });
+      // Get buffer from file
+      const buffer = await fs.promises.readFile(filePath)
 
-    const answer = await piecesClient.askQuestion({
-      question: transcription.text,
-    });
+      // Read .wav file and convert it to required format
+      let wav = new WaveFile(buffer);
+      wav.toBitDepth('32f'); // Pipeline expects input as a Float32Array
+      wav.toSampleRate(16000); // Whisper expects audio with a sampling rate of 16000
+      let audioData = wav.getSamples();
+      if (Array.isArray(audioData)) {
+        if (audioData.length > 1) {
+          const SCALING_FACTOR = Math.sqrt(2);
 
-    console.log(`BOT:\n${answer}`);
+          // Merge channels (into first channel to save memory)
+          for (let i = 0; i < audioData[0].length; ++i) {
+            audioData[0][i] = SCALING_FACTOR * (audioData[0][i] + audioData[1][i]) / 2;
+          }
+        }
 
-    const speechFile = "recordings/response.mp3";
+        // Select first channel
+        audioData = audioData[0];
+      }
 
-    const responseSpeech = await openai.audio.speech.create({
-      model: "tts-1",
-      voice: "nova",
-      input: answer,
-    });
+      console.log("Audio data read successfully.\n")
 
-    const buffer = Buffer.from(await responseSpeech.arrayBuffer());
-    await fs.promises.writeFile(speechFile, buffer);
+      // Transcribe the audio
+      const transcriber = await pipeline('automatic-speech-recognition', 'Xenova/whisper-small.en');
+      const output = await transcriber(audioData);
 
-    // Play the speech file
-    player.play(speechFile, function(err){
-      if (err) throw err
-    })
+      console.log(`USER:\n${output.text}\n`);
+
+      // console.log("\nProcessing transcription...\n");
+      const piecesClient = new PiecesClient({
+        baseURL: 'http://localhost:1000',
+      });
+
+      const answer = await piecesClient.askQuestion({
+        question: output.text,
+      });
+
+      console.log(`BOT:\n${answer}`);
+
+      const synthesizer = await pipeline('text-to-speech', 'Xenova/speecht5_tts', { quantized: false });
+      const speaker_embeddings = 'https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/speaker_embeddings.bin';
+      const out = await synthesizer(answer, { speaker_embeddings });
+
+      const responseFilePath = 'recordings/response.wav';
+      wav.fromScratch(1, out.sampling_rate, '32f', out.audio);
+      fs.writeFileSync(responseFilePath, wav.toBuffer());
+
+      // // Play the speech file
+      player.play(responseFilePath, function(err){
+        if (err) throw err
+      })
+    })();
   } catch (error) {
     console.error("Error during transcription or processing:", error);
   }

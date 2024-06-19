@@ -3,9 +3,10 @@
     "module": "commonjs",
     "target": "es2021",
     "outDir": "dist",
-    "rootDir": ".",
+    "rootDir": "src",
     "strict": true,
     "moduleResolution": "node",
-    "esModuleInterop": true,
-  }
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*"]
 }

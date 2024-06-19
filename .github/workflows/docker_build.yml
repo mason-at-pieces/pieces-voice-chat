@@ -15,7 +15,7 @@ env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: hra42/pieces-voice-chat
+  IMAGE_NAME: ${{ github.repository }}
 
 
 jobs:
@@ -68,4 +68,4 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-            ghcr.io/hra42/pieces-voice-chat:latest
+            ghcr.io/${{ github.repository }}:latest

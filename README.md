@@ -1,6 +1,6 @@
 # pieces-voice-chat
 
-This is a simple voice chat CLI application that allows users to communicate with [pieces](https://pieces.app) other using their voice.
+A simply cli that allows you to have conversations with Pieces OS using just your voice.
 
 ## Installation
 
@@ -17,7 +17,7 @@ npm install
 
 3. Run the application
 ```bash
-node src/index.js
+npm run start
 ```
 
 or you can use the prebuild docker image

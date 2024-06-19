@@ -68,4 +68,4 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-            ghcr.io/hra42/pieces-voice-chat:latest
+            ghcr.io/${{ github.repository }}:latest

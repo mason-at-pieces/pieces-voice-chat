@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2021",
-    "outDir": "dist",
-    "rootDir": "src",
+    "module": "ESNext", // or "ES2022"
+    "target": "ES2021", // or any other target you prefer
+    "outDir": "./dist",
+    "rootDir": "./src",
     "strict": true,
     "moduleResolution": "node",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

@@ -2,17 +2,18 @@
   "name": "pieces-audio",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "record": "node src/record.js",
-    "transcribe": "node src/transcribe.js",
+    "run": "ts-node --esm src/index.ts",
     "build": "tsc"
   },
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.14.5",
+    "@types/play-sound": "^1.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   },

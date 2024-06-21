@@ -20,7 +20,7 @@ npm install
 npm run start
 ```
 
-or you can use the prebuild docker image
+or you can use the prebuild docker image (currently only on Linux, for MacOS and Windows you need a way to passthrough a microphone to the container)
 
 ```bash
 # make sure your microphone is connected to the host machine and can be accessed by the operating system

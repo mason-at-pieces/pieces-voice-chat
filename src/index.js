@@ -41,9 +41,7 @@ async function transcribeAndRespond(filePath) {
 
       console.log(`USER:\n${output.text}\n`);
 
-      // If you are getting an error connecting to http:localhost:1000, try one of the following urls instead:
-      // http://0.0.0.0:1000
-      // http://127.0.0.1:1000
+      // If you are getting an error connecting to http:127.0.0.1:1000, try http://0.0.0.0:1000 or http://localhost:1000
       const piecesClient = new PiecesClient({
         baseUrl: 'http://127.0.0.1:1000',
       });

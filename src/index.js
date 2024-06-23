@@ -59,18 +59,25 @@ async function transcribeAndRespond(filePath) {
 
       console.log(`BOT:\n${answer}`);
 
+      // Summarize the response
+      const summarizer = await pipeline('summarization');
+      const summary = await summarizer(answer, { max_length: 50, min_length: 25, do_sample: false });
+
+      const summarizedText = summary[0].summary_text;
+      console.log(`Summarized BOT:\n${summarizedText}`);
+
       const synthesizer = await pipeline('text-to-speech', 'Xenova/speecht5_tts', { quantized: false });
       const speaker_embeddings = 'https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/speaker_embeddings.bin';
-      const out = await synthesizer(answer, { speaker_embeddings });
+      const out = await synthesizer(summarizedText, { speaker_embeddings });
 
       const responseFilePath = 'recordings/response.wav';
       wav.fromScratch(1, out.sampling_rate, '32f', out.audio);
       fs.writeFileSync(responseFilePath, wav.toBuffer());
 
-      // // Play the speech file
+      // Play the speech file
       player.play(responseFilePath, function(err){
-        if (err) throw err
-      })
+        if (err) throw err;
+      });
     })();
   } catch (error) {
     console.error("Error during transcription or processing:", error);
